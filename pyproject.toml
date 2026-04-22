@@ -1,0 +1,20 @@
+[project]
+name = "reddit-curator"
+version = "0.1.0"
+description = "Curated Reddit feed from your subscribed subs, filtered by Claude CLI."
+requires-python = ">=3.11"
+dependencies = [
+    "httpx>=0.27",
+    "python-dotenv>=1.0",
+    "click>=8.1",
+]
+
+[project.scripts]
+curator = "reddit_curator.cli:cli"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/reddit_curator"]

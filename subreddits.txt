@@ -1,0 +1,53 @@
+# One subreddit per line (no `r/` prefix). Lines starting with `#` are ignored.
+# Edit freely — this file is the source of truth for what the curator pulls from.
+
+# AI / LLM
+ChatGPT
+ClaudeAI
+Anthropic
+OpenAIDev
+LLMDevs
+LocalLLM
+singularity
+accelerate
+PromptEngineering
+mcp
+cursor
+PiCodingAgent
+vibecoding
+ChatGPTCoding
+
+# Generative / creative AI
+midjourney
+StableDiffusion
+aigamedev
+
+# Programming languages / general
+programming
+compsci
+rust
+cpp
+csharp
+dotnet
+haskell
+
+# Game dev / engines
+bevy
+rust_gamedev
+gameenginedevs
+GraphicsProgramming
+devblogs
+
+# Games
+ArcRaiders
+DeadlockTheGame
+cavesofqud
+hytale
+Palworld
+Terraria
+
+# Science / misc
+alife
+cellular_automata
+Physics
+LucidDreaming
