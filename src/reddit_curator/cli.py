@@ -40,7 +40,10 @@ def fetch(limit, n, listing, include_seen, no_nsfw):
         click.echo("Claude returned no picks.")
         return
     for p, why in picks:
-        click.echo(f"\n[{p.score}↑ {p.num_comments}💬] r/{p.subreddit}  ({p.id})")
+        meta = f"r/{p.subreddit}  ({p.id})"
+        if p.score or p.num_comments:
+            meta = f"[{p.score}↑ {p.num_comments}💬] {meta}"
+        click.echo(f"\n{meta}")
         click.echo(f"  {p.title}")
         click.echo(f"  → {why}")
         click.echo(f"  {p.permalink}")

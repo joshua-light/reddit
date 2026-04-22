@@ -26,13 +26,15 @@ def _format_posts(posts: list[Post]) -> str:
     chunks = []
     for p in posts:
         body = p.selftext[:400] if p.selftext else f"(link: {p.url})"
-        chunks.append(
+        line = (
             f"id: {p.id}\n"
             f"sub: r/{p.subreddit}\n"
             f"title: {p.title}\n"
-            f"score: {p.score} | comments: {p.num_comments}\n"
-            f"body: {body}"
         )
+        if p.score or p.num_comments:
+            line += f"score: {p.score} | comments: {p.num_comments}\n"
+        line += f"body: {body}"
+        chunks.append(line)
     return "\n\n---\n\n".join(chunks)
 
 
