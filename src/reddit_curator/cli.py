@@ -1,7 +1,7 @@
 import click
 
 from .curator import pick_interesting
-from .feed import deduplicate, fetch_frontpage
+from .feed import all_tags, deduplicate, fetch_frontpage
 from .state import (
     append_preference,
     load_preferences,
@@ -22,13 +22,14 @@ def cli():
 @click.option("--listing", default="hot", show_default=True,
               type=click.Choice(["hot", "new", "top", "best", "rising"]))
 @click.option("--include-seen", is_flag=True, help="Include already-shown posts.")
-@click.option("--no-nsfw", is_flag=True, default=True, help="Filter out NSFW posts.")
-def fetch(limit, n, listing, include_seen, no_nsfw):
+@click.option("--tag", default=None, help="Only fetch subs carrying this tag.")
+def fetch(limit, n, listing, include_seen, tag):
     """Pull your subscribed-subs frontpage, filter via Claude, show top N."""
-    posts = fetch_frontpage(limit=limit, listing=listing)
+    if tag and tag.lower() not in all_tags():
+        known = ", ".join(sorted(all_tags())) or "(none)"
+        raise click.BadParameter(f"unknown tag {tag!r}. Known: {known}", param_hint="--tag")
+    posts = fetch_frontpage(limit=limit, listing=listing, tag=tag)
     posts = deduplicate(posts)
-    if no_nsfw:
-        posts = [p for p in posts if not p.over_18]
     if not include_seen:
         seen = load_seen()
         posts = [p for p in posts if p.id not in seen]
@@ -72,6 +73,17 @@ def why(rule):
 def prefs():
     """Print the current preferences file."""
     click.echo(load_preferences())
+
+
+@cli.command()
+def tags():
+    """List tags configured in subreddits.txt with sub counts."""
+    counts = all_tags()
+    if not counts:
+        click.echo("No tags configured.")
+        return
+    for t, n in sorted(counts.items(), key=lambda kv: (-kv[1], kv[0])):
+        click.echo(f"  {t}: {n}")
 
 
 if __name__ == "__main__":

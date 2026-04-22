@@ -29,21 +29,49 @@ class Post:
     stickied: bool = False
 
 
-def load_subreddits() -> list[str]:
+@dataclass
+class SubSpec:
+    name: str
+    tags: list[str]
+
+
+def _parse_subreddits_file() -> list[SubSpec]:
     path = subreddits_file()
     if not path.exists():
         raise RuntimeError(
             f"No subreddits file at {path}. Add one subreddit name per line."
         )
-    subs: list[str] = []
+    specs: list[SubSpec] = []
     for raw in path.read_text().splitlines():
         line = raw.strip()
         if not line or line.startswith("#"):
             continue
-        if line.lower().startswith("r/"):
-            line = line[2:]
-        subs.append(line)
-    return subs
+        parts = line.split(None, 1)
+        name = parts[0]
+        if name.lower().startswith("r/"):
+            name = name[2:]
+        tags: list[str] = []
+        if len(parts) == 2:
+            tags = [t.strip().lower() for t in parts[1].split(",") if t.strip()]
+        specs.append(SubSpec(name=name, tags=tags))
+    return specs
+
+
+def load_subreddits(tag: str | None = None) -> list[str]:
+    specs = _parse_subreddits_file()
+    if tag:
+        t = tag.lower()
+        specs = [s for s in specs if t in s.tags]
+    return [s.name for s in specs]
+
+
+def all_tags() -> dict[str, int]:
+    """Return a mapping of tag → number of subreddits carrying that tag."""
+    counts: dict[str, int] = {}
+    for spec in _parse_subreddits_file():
+        for t in spec.tags:
+            counts[t] = counts.get(t, 0) + 1
+    return counts
 
 
 _TAG_RE = re.compile(r"<[^>]+>")
@@ -135,12 +163,14 @@ def fetch_frontpage(
     limit: int = 100,
     listing: str = "hot",
     subreddits: list[str] | None = None,
+    tag: str | None = None,
 ) -> list[Post]:
     """Pull posts from the configured subreddits via Reddit's public Atom feeds.
 
     listing: "hot" | "new" | "top" | "rising"
+    tag: if set, only fetch subs carrying this tag.
     """
-    subs = subreddits if subreddits is not None else load_subreddits()
+    subs = subreddits if subreddits is not None else load_subreddits(tag=tag)
     if not subs:
         return []
 
