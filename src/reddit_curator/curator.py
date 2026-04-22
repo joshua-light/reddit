@@ -17,6 +17,8 @@ _PROMPT = """You are curating a Reddit feed for a user who is tired of noise, hy
 
 Rank by substance, novelty, and fit with the user's preferences — NOT by upvotes. Skip reposts, shallow memes, rage-bait, and anything matching the user's dislikes.
 
+Aggressively filter out self-promotion and marketing slop. Telltale signs: a post that primarily exists to drive traffic to the author's product/blog/YouTube/newsletter/Discord/GitHub; "I built X" or "Check out my…" launch posts with no substantive discussion; recycled listicles or SEO-bait titles ("Top 10…", "X reasons why…"); thinly-veiled ads dressed as tutorials, case studies, or "lessons learned"; AI-generated filler with vague platitudes and no specific insight; recruiting/affiliate/referral posts. When in doubt between a promo post and a real discussion, drop the promo.
+
 Return STRICT JSON only, no prose, no code fences, in this exact shape:
 {{"picks": [{{"id": "<post id>", "why": "<one short sentence>"}}]}}
 """
