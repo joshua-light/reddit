@@ -23,7 +23,9 @@ def cli():
               type=click.Choice(["hot", "new", "top", "best", "rising"]))
 @click.option("--include-seen", is_flag=True, help="Include already-shown posts.")
 @click.option("--tag", default=None, help="Only fetch subs carrying this tag.")
-def fetch(limit, n, listing, include_seen, tag):
+@click.option("--focus", default=None,
+              help="Ad-hoc focus for this query only (e.g. 'new model releases').")
+def fetch(limit, n, listing, include_seen, tag, focus):
     """Pull your subscribed-subs frontpage, filter via Claude, show top N."""
     if tag and tag.lower() not in all_tags():
         known = ", ".join(sorted(all_tags())) or "(none)"
@@ -36,7 +38,7 @@ def fetch(limit, n, listing, include_seen, tag):
     if not posts:
         click.echo("No candidate posts after filtering.")
         return
-    picks = pick_interesting(posts, n=n)
+    picks = pick_interesting(posts, n=n, focus=focus)
     if not picks:
         click.echo("Claude returned no picks.")
         return

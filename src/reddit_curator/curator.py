@@ -10,7 +10,7 @@ _PROMPT = """You are curating a Reddit feed for a user who is tired of noise, hy
 <user_preferences>
 {preferences}
 </user_preferences>
-
+{focus_block}
 <candidate_posts>
 {posts}
 </candidate_posts>
@@ -21,6 +21,13 @@ Aggressively filter out self-promotion and marketing slop. Telltale signs: a pos
 
 Return STRICT JSON only, no prose, no code fences, in this exact shape:
 {{"picks": [{{"id": "<post id>", "why": "<one short sentence>"}}]}}
+"""
+
+_FOCUS_BLOCK = """
+<session_focus>
+For THIS query only, the user also wants you to: {focus}
+Weight this heavily when ranking — it takes precedence over the default "substance/novelty" heuristic, but does NOT override the user's persistent preferences or dislikes above.
+</session_focus>
 """
 
 
@@ -48,13 +55,19 @@ def _extract_json(raw: str) -> dict:
     return json.loads(raw[start : end + 1])
 
 
-def pick_interesting(posts: list[Post], n: int = 5) -> list[tuple[Post, str]]:
+def pick_interesting(
+    posts: list[Post], n: int = 5, focus: str | None = None
+) -> list[tuple[Post, str]]:
     """Send candidates to the Claude CLI and return (post, reason) for the picks."""
     if not posts:
         return []
+    focus_block = (
+        _FOCUS_BLOCK.format(focus=focus.strip()) if focus and focus.strip() else ""
+    )
     prompt = _PROMPT.format(
         n=n,
         preferences=load_preferences(),
+        focus_block=focus_block,
         posts=_format_posts(posts),
     )
     result = subprocess.run(
