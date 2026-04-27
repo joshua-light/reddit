@@ -21,8 +21,8 @@ cd reddit-curator
 uv sync
 ```
 
-Edit `subreddits.txt` to taste — one subreddit per line, with optional
-comma-separated tags after the name.
+Create `subreddits.txt` in the repo root — one subreddit per line, with
+optional comma-separated tags after the name.
 
 ## Usage
 
