@@ -15,7 +15,7 @@ _PROMPT = """You are curating a Reddit feed for a user who is tired of noise, hy
 {posts}
 </candidate_posts>
 
-Rank by substance, novelty, and fit with the user's preferences — NOT by upvotes. Skip reposts, shallow memes, rage-bait, and anything matching the user's dislikes.
+Rank by substance, novelty, and fit with the user's preferences, with upvote count as a strong secondary signal: prefer well-upvoted posts (treat the score as social proof of quality) and actively avoid low-scoring posts unless they are exceptionally substantive and on-topic. As a rough guide, posts under ~20 score should usually be skipped; posts in the hundreds or thousands deserve a closer look. Skip reposts, shallow memes, rage-bait, and anything matching the user's dislikes — high upvotes do NOT excuse those.
 
 Aggressively filter out self-promotion and marketing slop. Telltale signs: a post that primarily exists to drive traffic to the author's product/blog/YouTube/newsletter/Discord/GitHub; "I built X" or "Check out my…" launch posts with no substantive discussion; recycled listicles or SEO-bait titles ("Top 10…", "X reasons why…"); thinly-veiled ads dressed as tutorials, case studies, or "lessons learned"; AI-generated filler with vague platitudes and no specific insight; recruiting/affiliate/referral posts. When in doubt between a promo post and a real discussion, drop the promo.
 
