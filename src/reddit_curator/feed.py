@@ -76,7 +76,12 @@ def all_tags() -> dict[str, int]:
 
 _TAG_RE = re.compile(r"<[^>]+>")
 _SC_RE = re.compile(r"<!-- SC_OFF -->(.*?)<!-- SC_ON -->", re.DOTALL)
-_WS_RE = re.compile(r"\s+")
+_BR_RE = re.compile(r"<br\s*/?>", re.IGNORECASE)
+_BLOCK_END_RE = re.compile(
+    r"</(p|div|li|h[1-6]|blockquote|pre|ul|ol|tr|td|th)>", re.IGNORECASE
+)
+_HSPACE_RE = re.compile(r"[ \t\xa0]+")
+_MULTI_NL_RE = re.compile(r"\n{3,}")
 _LINK_RE = re.compile(r'<a href="([^"]+)"[^>]*>\[link\]</a>')
 
 
@@ -95,8 +100,14 @@ def _extract_selftext(html_content: str) -> str:
     m = _SC_RE.search(html_content)
     if not m:
         return ""
-    stripped = _TAG_RE.sub("", m.group(1))
-    return _WS_RE.sub(" ", _unescape(stripped)).strip()[:3500]
+    text = _BR_RE.sub("\n", m.group(1))
+    text = _BLOCK_END_RE.sub("\n\n", text)
+    text = _TAG_RE.sub("", text)
+    text = _unescape(text)
+    text = _HSPACE_RE.sub(" ", text)
+    text = "\n".join(line.strip() for line in text.split("\n"))
+    text = _MULTI_NL_RE.sub("\n\n", text)
+    return text.strip()[:3500]
 
 
 def _extract_external_link(html_content: str, fallback: str) -> str:
