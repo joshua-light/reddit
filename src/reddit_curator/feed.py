@@ -96,7 +96,7 @@ def _extract_selftext(html_content: str) -> str:
     if not m:
         return ""
     stripped = _TAG_RE.sub("", m.group(1))
-    return _WS_RE.sub(" ", _unescape(stripped)).strip()[:1000]
+    return _WS_RE.sub(" ", _unescape(stripped)).strip()[:3500]
 
 
 def _extract_external_link(html_content: str, fallback: str) -> str:
