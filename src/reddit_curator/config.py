@@ -22,6 +22,12 @@ def preferences_file() -> Path:
     return data_dir() / "preferences.md"
 
 
+def dreams_dir() -> Path:
+    d = data_dir() / "dreams"
+    d.mkdir(parents=True, exist_ok=True)
+    return d
+
+
 def subreddits_file() -> Path:
     """Look for subreddits.txt in the repo root first, then the data dir."""
     repo_local = _REPO_ROOT / "subreddits.txt"

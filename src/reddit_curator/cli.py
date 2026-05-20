@@ -1,6 +1,7 @@
 import click
 
 from .curator import pick_interesting
+from .dream import consolidate
 from .feed import all_tags, deduplicate, fetch_frontpage
 from .state import (
     append_preference,
@@ -75,6 +76,26 @@ def why(rule):
 def prefs():
     """Print the current preferences file."""
     click.echo(load_preferences())
+
+
+@cli.command()
+@click.option("--dry-run", is_flag=True, help="Print the proposed rewrite without touching files.")
+def dream(dry_run):
+    """Consolidate raw per-post reactions in preferences.md into broad pattern rules."""
+    result = consolidate(dry_run=dry_run)
+    if result["status"] == "no_reactions":
+        click.echo("No raw reactions to consolidate.")
+        return
+    click.echo(
+        f"Distilled {result['reactions']} reactions → "
+        f"{result['new_likes']} likes, {result['new_dislikes']} dislikes rules."
+    )
+    if dry_run:
+        click.echo(f"\n--- proposed preferences.md ---\n{result['preview_preferences']}")
+        click.echo(f"\n--- proposed archive ({result['archive_path']}) ---\n{result['preview_archive']}")
+        click.echo("\n[dry-run] no files written.")
+    else:
+        click.echo(f"Archived raw reactions to {result['archive_path']}.")
 
 
 @cli.command()
