@@ -45,3 +45,18 @@ def user_agent() -> str:
 
 def claude_bin() -> str:
     return os.environ.get("CLAUDE_BIN", "claude")
+
+
+# Ranking/consolidation are pure text tasks that need NO tools, and the input
+# includes untrusted Reddit content. Run headless with EVERY tool denied (never
+# --dangerously-skip-permissions) so prompt injection in scraped text cannot
+# reach the shell, filesystem, or network as the bot user. These are the
+# primary, in-code guardrail; the repo .claude/settings.json is secondary and
+# is not even loaded from the subprocess cwd (clawdy / $HOME).
+_DENIED_TOOLS = "Bash,Edit,Write,Read,WebFetch,WebSearch,NotebookEdit,Task"
+CLAUDE_FLAGS = ("--permission-mode", "default", "--disallowedTools", _DENIED_TOOLS)
+
+
+def claude_flags() -> list[str]:
+    """Safe flags for the headless `claude -p` calls: deny all tools."""
+    return list(CLAUDE_FLAGS)
